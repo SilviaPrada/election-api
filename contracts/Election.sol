@@ -13,6 +13,8 @@ contract Election {
         bytes32 passwordHash;
         uint256 lastUpdated; // Timestamp of the last update
         bool isActive; // To mark if a voter is active
+        bytes32 transactionHash;
+        uint256 blockNumber;
     }
 
     struct Candidate {
@@ -23,6 +25,8 @@ contract Election {
         uint256 voteCount;
         uint256 lastUpdated; // Timestamp of the last update
         bool isActive; // To mark if a voter is active
+        bytes32 transactionHash;
+        uint256 blockNumber;
     }
 
     struct VoterHistory {
@@ -32,6 +36,8 @@ contract Election {
         bool hasVoted;
         bytes32 passwordHash;
         uint256 timestamp;
+        bytes32 transactionHash;
+        uint256 blockNumber;
     }
 
     struct CandidateHistory {
@@ -41,12 +47,16 @@ contract Election {
         string misi;
         uint256 voteCount;
         uint256 timestamp;
+        bytes32 transactionHash;
+        uint256 blockNumber;
     }
 
     struct VoteCountHistory {
         uint256 candidateId;
         uint256 voteCount;
         uint256 timestamp;
+        bytes32 transactionHash;
+        uint256 blockNumber;
     }
 
     event VoterAdded(uint256 id, string name);
@@ -92,7 +102,10 @@ contract Election {
             hasVoted: false,
             passwordHash: keccak256(abi.encodePacked(_password)),
             lastUpdated: block.timestamp,
-            isActive: true
+            isActive: true,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
+
         });
 
         voterIds.push(_id);
@@ -109,13 +122,17 @@ contract Election {
             email: voters[_id].email,
             hasVoted: voters[_id].hasVoted,
             passwordHash: voters[_id].passwordHash,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         voters[_id].name = _name;
         voters[_id].email = _email;
         voters[_id].passwordHash = keccak256(abi.encodePacked(_password));
         voters[_id].lastUpdated = block.timestamp;
+        voters[_id].transactionHash = blockhash(block.number - 1);
+        voters[_id].blockNumber = block.number;
 
         emit VoterUpdated(_id, _name);
     }
@@ -130,7 +147,9 @@ contract Election {
             email: voters[_id].email,
             hasVoted: voters[_id].hasVoted,
             passwordHash: voters[_id].passwordHash,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         voters[_id].isActive = false; // Mark voter as inactive instead of deleting
@@ -148,7 +167,9 @@ contract Election {
             misi: _misi,
             voteCount: 0,
             lastUpdated: block.timestamp,
-            isActive: true
+            isActive: true,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         });
 
         candidateIds.push(_id);
@@ -165,13 +186,17 @@ contract Election {
             visi: candidates[_id].visi,
             misi: candidates[_id].misi,
             voteCount: candidates[_id].voteCount,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         candidates[_id].name = _name;
         candidates[_id].visi = _visi;
         candidates[_id].misi = _misi;
         candidates[_id].lastUpdated = block.timestamp;
+        candidates[_id].transactionHash = blockhash(block.number - 1);
+        candidates[_id].blockNumber = block.number;
 
         emit CandidateUpdated(_id, _name);
     }
@@ -186,7 +211,9 @@ contract Election {
             visi: candidates[_id].visi,
             misi: candidates[_id].misi,
             voteCount: candidates[_id].voteCount,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         candidates[_id].isActive = false; // Mark candidate as inactive instead of deleting
@@ -207,7 +234,9 @@ contract Election {
             email: voters[_voterId].email,
             hasVoted: voters[_voterId].hasVoted,
             passwordHash: voters[_voterId].passwordHash,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         candidates[_candidateId].voteCount++;
@@ -216,11 +245,15 @@ contract Election {
         voteCountHistories[_candidateId].push(VoteCountHistory({
             candidateId: _candidateId,
             voteCount: candidates[_candidateId].voteCount,
-            timestamp: block.timestamp
+            timestamp: block.timestamp,
+            transactionHash: blockhash(block.number - 1),
+            blockNumber: block.number
         }));
 
         voters[_voterId].hasVoted = true;
         voters[_voterId].lastUpdated = block.timestamp;
+        voters[_voterId].transactionHash = blockhash(block.number - 1);
+        voters[_voterId].blockNumber = block.number;
     }
 
     function endElection() public onlyOwner {
@@ -294,7 +327,9 @@ contract Election {
                 email: voters[voterId].email,
                 hasVoted: voters[voterId].hasVoted,
                 passwordHash: voters[voterId].passwordHash,
-                timestamp: voters[voterId].lastUpdated
+                timestamp: voters[voterId].lastUpdated,
+                transactionHash: voters[voterId].transactionHash,
+                blockNumber: voters[voterId].blockNumber
             });
             index++;
 
@@ -331,7 +366,9 @@ contract Election {
                 visi: candidates[candidateId].visi,
                 misi: candidates[candidateId].misi,
                 voteCount: candidates[candidateId].voteCount,
-                timestamp: candidates[candidateId].lastUpdated
+                timestamp: candidates[candidateId].lastUpdated,
+                transactionHash: candidates[candidateId].transactionHash,
+                blockNumber: candidates[candidateId].blockNumber
             });
             index++;
 

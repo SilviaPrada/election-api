@@ -126,7 +126,9 @@ app.get('/voters', async (req, res) => {
                 name: voter.name,
                 email: voter.email,
                 hasVoted: voter.hasVoted,
-                lastUpdated: voter.lastUpdated
+                lastUpdated: voter.lastUpdated,
+                transactionHash: voter.transactionHash,
+                blockNumber: voter.blockNumber
             }))
         };
         res.json(response);
@@ -148,7 +150,9 @@ app.get('/candidates', async (req, res) => {
                 visi: candidate.visi,
                 misi: candidate.misi,
                 voteCount: candidate.voteCount,
-                lastUpdated: candidate.lastUpdated
+                lastUpdated: candidate.lastUpdated,
+                transactionHash: candidate.transactionHash,
+                blockNumber: candidate.blockNumber
             }))
         };
         res.json(response);
@@ -167,7 +171,9 @@ app.get('/voters/:id', async (req, res) => {
             name: voter.name,
             email: voter.email,
             hasVoted: voter.hasVoted,
-            lastUpdated: voter.lastUpdated
+            lastUpdated: voter.lastUpdated,
+            transactionHash: voter.transactionHash,
+            blockNumber: voter.blockNumber
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -185,7 +191,9 @@ app.get('/candidates/:id', async (req, res) => {
             visi: candidate.visi,
             misi: candidate.misi,
             voteCount: candidate.voteCount,
-            lastUpdated: candidate.lastUpdated
+            lastUpdated: candidate.lastUpdated,
+            transactionHash: candidate.transactionHash,
+            blockNumber: candidate.blockNumber
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
